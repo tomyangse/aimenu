@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createSupabaseClient } from "@/lib/supabase";
@@ -12,9 +13,22 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
   const supabase = createSupabaseClient();
+
+  // 检查 URL 参数，显示注册成功消息
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("registered") === "true") {
+      if (params.get("check_email") === "true") {
+        setSuccessMessage(t("auth.checkEmail") || "请检查您的邮箱以确认账户");
+      } else {
+        setSuccessMessage(t("auth.registrationSuccess") || "注册成功！请登录");
+      }
+    }
+  }, [t]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +99,11 @@ export default function LoginPage() {
                 placeholder={t("auth.passwordPlaceholder")}
               />
             </div>
+            {successMessage && (
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg text-sm border border-green-200 dark:border-green-800">
+                {successMessage}
+              </div>
+            )}
             {error && (
               <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm border border-destructive/20">
                 {error}
@@ -97,6 +116,12 @@ export default function LoginPage() {
             >
               {isLoading ? t("auth.loggingIn") : t("auth.login")}
             </Button>
+            <div className="text-center text-sm text-muted-foreground">
+              {t("auth.noAccount")}{" "}
+              <Link href="/register" className="text-primary hover:underline">
+                {t("auth.register")}
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>

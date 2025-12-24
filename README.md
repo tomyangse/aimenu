@@ -52,3 +52,16 @@ aimenu/
 └── public/          # 静态资源
 ```
 
+## 部署到 Vercel
+
+1. 将项目推送到 GitHub
+2. 在 [Vercel](https://vercel.com) 导入项目
+3. 在环境变量中添加 `NEXT_PUBLIC_GEMINI_API_KEY`
+4. 部署完成！
+
+## 环境变量
+
+在 Vercel 部署时，需要在项目设置中添加以下环境变量：
+
+- `NEXT_PUBLIC_GEMINI_API_KEY`: 你的 Gemini API 密钥
+

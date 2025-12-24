@@ -27,11 +27,24 @@ npm install
 
 ### 配置环境变量
 
-创建 `.env.local` 文件并添加你的 Gemini API 密钥：
+创建 `.env.local` 文件并添加以下环境变量：
 
-```
+```env
+# Gemini API Key
 NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+#### 获取 Supabase 配置
+
+1. 访问 [Supabase](https://supabase.com) 并创建账户
+2. 创建新项目
+3. 在项目设置中找到 API 设置
+4. 复制 `Project URL` 作为 `NEXT_PUBLIC_SUPABASE_URL`
+5. 复制 `anon public` key 作为 `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### 运行开发服务器
 

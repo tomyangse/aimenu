@@ -17,7 +17,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Eat Like Local",
+  title: "Eat Like a Local",
   description: "使用 AI 识别、翻译和解读菜单",
 };
 

@@ -55,7 +55,7 @@ export type TranslationKey =
 // 翻译内容
 const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
   "zh-CN": {
-    "app.title": "AI 点菜助手",
+    "app.title": "像本地人一样吃喝",
     "upload.title": "上传菜单图片",
     "upload.description": "支持 JPG、PNG 等图片格式，最大 10MB",
     "upload.supportedFormats": "支持 JPG、PNG、WEBP 等格式",
@@ -106,7 +106,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "请稍后重试",
   },
   "en": {
-    "app.title": "AI Ordering Assistant",
+    "app.title": "Eat Like a Local",
     "upload.title": "Upload Menu Image",
     "upload.description": "Supports JPG, PNG and other image formats, max 10MB",
     "upload.supportedFormats": "Supports JPG, PNG, WEBP and other formats",
@@ -157,7 +157,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "Please try again later",
   },
   "sv": {
-    "app.title": "AI Beställningsassistent",
+    "app.title": "Ät som en lokal",
     "upload.title": "Ladda upp menybild",
     "upload.description": "Stöder JPG, PNG och andra bildformat, max 10MB",
     "upload.supportedFormats": "Stöder JPG, PNG, WEBP och andra format",
@@ -208,7 +208,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "Vänligen försök igen senare",
   },
   "es": {
-    "app.title": "Asistente de Pedidos IA",
+    "app.title": "Come como un local",
     "upload.title": "Subir Imagen del Menú",
     "upload.description": "Soporta formatos JPG, PNG y otros, máximo 10MB",
     "upload.supportedFormats": "Soporta formatos JPG, PNG, WEBP y otros",
@@ -259,7 +259,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "Por favor intenta de nuevo más tarde",
   },
   "fr": {
-    "app.title": "Assistant de Commande IA",
+    "app.title": "Mangez comme un local",
     "upload.title": "Télécharger l'Image du Menu",
     "upload.description": "Supporte les formats JPG, PNG et autres, max 10MB",
     "upload.supportedFormats": "Supporte les formats JPG, PNG, WEBP et autres",
@@ -310,7 +310,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "Veuillez réessayer plus tard",
   },
   "de": {
-    "app.title": "KI-Bestellassistent",
+    "app.title": "Essen wie ein Einheimischer",
     "upload.title": "Menübild Hochladen",
     "upload.description": "Unterstützt JPG, PNG und andere Bildformate, max. 10MB",
     "upload.supportedFormats": "Unterstützt JPG, PNG, WEBP und andere Formate",
@@ -361,7 +361,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "Bitte versuchen Sie es später erneut",
   },
   "it": {
-    "app.title": "Assistente Ordini IA",
+    "app.title": "Mangia come un locale",
     "upload.title": "Carica Immagine Menu",
     "upload.description": "Supporta formati JPG, PNG e altri, max 10MB",
     "upload.supportedFormats": "Supporta formati JPG, PNG, WEBP e altri",
@@ -412,7 +412,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "Riprova più tardi",
   },
   "ja": {
-    "app.title": "AI注文アシスタント",
+    "app.title": "地元のように食べる",
     "upload.title": "メニュー画像をアップロード",
     "upload.description": "JPG、PNGなどの画像形式をサポート、最大10MB",
     "upload.supportedFormats": "JPG、PNG、WEBPなどの形式をサポート",
@@ -463,7 +463,7 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.retry": "後でもう一度お試しください",
   },
   "ko": {
-    "app.title": "AI 주문 어시스턴트",
+    "app.title": "현지인처럼 먹기",
     "upload.title": "메뉴 이미지 업로드",
     "upload.description": "JPG, PNG 등 이미지 형식 지원, 최대 10MB",
     "upload.supportedFormats": "JPG, PNG, WEBP 등 형식 지원",

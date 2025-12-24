@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,6 +16,7 @@ import ReactMarkdown from "react-markdown";
 import { Header } from "@/components/header";
 import { useLanguage } from "@/contexts/language-context";
 import { useTranslation } from "@/lib/translations";
+import { getLoadingMessages } from "@/lib/loading-messages";
 
 // 定义菜单项类型
 type MenuItemType = {
@@ -50,6 +51,7 @@ export default function MenuUpload() {
   const [isGeneratingOrder, setIsGeneratingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderNote, setOrderNote] = useState<string>(""); // 点餐备注
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0); // 当前加载消息索引
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = useCallback((selectedFile: File) => {
@@ -134,6 +136,23 @@ export default function MenuUpload() {
   const handleRemoveFromCart = (index: number) => {
     setSelectedItems((prev) => prev.filter((item) => item.index !== index));
   };
+
+  // 循环播放加载消息
+  useEffect(() => {
+    if (!isAnalyzing) {
+      setLoadingMsgIndex(0);
+      return;
+    }
+
+    const messages = getLoadingMessages(userLanguage);
+    const interval = setInterval(() => {
+      setLoadingMsgIndex((prevIndex) => (prevIndex + 1) % messages.length);
+    }, 3000); // 每3秒切换一次
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isAnalyzing, userLanguage]);
 
 
   // 确认点餐 - 调用 API 生成自然的点餐文字（流式）
@@ -654,7 +673,10 @@ export default function MenuUpload() {
             <Card>
               <CardContent className="py-8">
                 <div className="text-center text-muted-foreground">
-                  {t("upload.analyzingMenu")}
+                  <Loader2 className="h-5 w-5 animate-spin inline-block mb-3" />
+                  <p className="text-gray-600 dark:text-gray-400 font-medium animate-pulse">
+                    {getLoadingMessages(userLanguage)[loadingMsgIndex]}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -801,7 +823,9 @@ export default function MenuUpload() {
               {isAnalyzing && (
                 <div className="text-center py-4 text-muted-foreground text-sm">
                   <Loader2 className="h-4 w-4 animate-spin inline-block mr-2" />
-                  {t("upload.continueAnalyzing")}
+                  <span className="text-gray-600 dark:text-gray-400 font-medium animate-pulse">
+                    {getLoadingMessages(userLanguage)[loadingMsgIndex]}
+                  </span>
                 </div>
               )}
               </div>

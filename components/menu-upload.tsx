@@ -724,6 +724,7 @@ export default function MenuUpload() {
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
+                    capture="environment"
                     onChange={handleFileInputChange}
                     className="hidden"
                   />

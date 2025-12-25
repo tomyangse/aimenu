@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Upload, X, Loader2, ShoppingCart, Check, Copy, Menu, ChevronDown, ChevronUp, Plus, Camera, Bookmark, Home, Clock, User } from "lucide-react";
+import { Upload, X, Loader2, ShoppingCart, Check, Copy, Menu, ChevronDown, ChevronUp, Plus, Camera, Bookmark, Home, Clock, User, MessageCircle, Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Header } from "@/components/header";
 import { useLanguage } from "@/contexts/language-context";
@@ -52,7 +52,14 @@ export default function MenuUpload() {
   const [error, setError] = useState<string | null>(null);
   const [orderNote, setOrderNote] = useState<string>(""); // 点餐备注
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0); // 当前加载消息索引
+  const [isAskDialogOpen, setIsAskDialogOpen] = useState(false); // 询问对话框状态
+  const [currentDish, setCurrentDish] = useState<{ name: string; description: string; originalName: string } | null>(null); // 当前询问的菜品
+  const [conversationHistory, setConversationHistory] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]); // 对话历史
+  const [currentQuestion, setCurrentQuestion] = useState<string>(""); // 当前输入的问题
+  const [isAsking, setIsAsking] = useState(false); // 是否正在询问
+  const [currentAnswer, setCurrentAnswer] = useState<string>(""); // 当前流式回答
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleFileSelect = useCallback((selectedFile: File) => {
     // 验证文件类型
@@ -154,6 +161,154 @@ export default function MenuUpload() {
     };
   }, [isAnalyzing, userLanguage]);
 
+  // 滚动到消息底部
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [conversationHistory, currentAnswer]);
+
+  // 打开询问对话框
+  const handleOpenAskDialog = (item: MenuItemType) => {
+    const parts = item.content.split("|").map(part => part.trim());
+    if (parts.length >= 4) {
+      const [originalName, chineseName, price, description] = parts;
+      setCurrentDish({
+        name: chineseName || originalName,
+        description: description || "",
+        originalName: originalName,
+      });
+      setConversationHistory([]);
+      setCurrentAnswer("");
+      setCurrentQuestion("");
+      setIsAskDialogOpen(true);
+    }
+  };
+
+  // 发送问题
+  const handleSendQuestion = async () => {
+    if (!currentQuestion.trim() || !currentDish || isAsking) return;
+
+    const question = currentQuestion.trim();
+    setCurrentQuestion("");
+    setIsAsking(true);
+    setCurrentAnswer("");
+
+    // 添加用户问题到对话历史（先添加到历史中，这样API可以获取到）
+    const userMessage = { role: "user" as const, content: question };
+    const updatedHistory = [...conversationHistory, userMessage];
+    setConversationHistory(updatedHistory);
+
+    try {
+      const response = await fetch("/api/ask-dish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          dishName: currentDish.originalName,
+          dishDescription: currentDish.description,
+          question: question,
+          conversationHistory: conversationHistory, // 传递之前的完整历史，不包含当前问题
+          userLanguage: userLanguage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get answer");
+      }
+
+      if (!response.body) {
+        throw new Error("Response body is empty");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let sseBuffer = "";
+      let answer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        sseBuffer += decoder.decode(value, { stream: true });
+        const sseLines = sseBuffer.split("\n\n");
+        sseBuffer = sseLines.pop() || "";
+
+        for (const sseLine of sseLines) {
+          if (sseLine.startsWith("data: ")) {
+            const data = sseLine.slice(6);
+            if (data === "[DONE]") {
+              // 流式输出完成，添加到对话历史
+              setConversationHistory((prev) => [
+                ...prev,
+                { role: "assistant", content: answer },
+              ]);
+              setCurrentAnswer("");
+              setIsAsking(false);
+              return;
+            }
+
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.text) {
+                answer += parsed.text;
+                setCurrentAnswer(answer);
+              }
+            } catch (e) {
+              // 忽略解析错误
+              console.warn("Failed to parse SSE data:", e);
+            }
+          }
+        }
+      }
+
+      // 处理剩余的缓冲区
+      if (sseBuffer.trim()) {
+        const remainingLines = sseBuffer.split("\n\n");
+        for (const sseLine of remainingLines) {
+          if (sseLine.startsWith("data: ")) {
+            const data = sseLine.slice(6);
+            if (data === "[DONE]") {
+              setConversationHistory((prev) => [
+                ...prev,
+                { role: "assistant", content: answer },
+              ]);
+              setCurrentAnswer("");
+              setIsAsking(false);
+              return;
+            }
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.text) {
+                answer += parsed.text;
+                setCurrentAnswer(answer);
+              }
+            } catch (e) {
+              console.warn("Failed to parse remaining SSE data:", e);
+            }
+          }
+        }
+      }
+
+      // 如果流正常结束，添加最终答案
+      if (answer) {
+        setConversationHistory((prev) => [
+          ...prev,
+          { role: "assistant", content: answer },
+        ]);
+      }
+      setCurrentAnswer("");
+      setIsAsking(false);
+    } catch (error) {
+      console.error("Error asking question:", error);
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "assistant", content: t("ask.error") || "抱歉，无法获取回答，请稍后重试。" },
+      ]);
+      setIsAsking(false);
+    }
+  };
 
   // 确认点餐 - 调用 API 生成自然的点餐文字（流式）
   const handleConfirmOrder = async () => {
@@ -774,7 +929,7 @@ export default function MenuUpload() {
                             </p>
                           )}
                           
-                          {/* 底部操作栏：复选框和书签 */}
+                          {/* 底部操作栏：复选框、询问和书签 */}
                           <div className="flex items-center justify-between pt-2 border-t border-border/40">
                             <button
                               onClick={() => {
@@ -795,13 +950,24 @@ export default function MenuUpload() {
                                 {isSelected ? t("item.selected") : t("item.select")}
                               </span>
                             </button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-foreground hover:bg-muted"
-                            >
-                              <Bookmark className="h-4 w-4" />
-                            </Button>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-foreground hover:bg-muted"
+                                onClick={() => handleOpenAskDialog(item)}
+                                title={t("ask.title") || "询问菜品"}
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-foreground hover:bg-muted"
+                              >
+                                <Bookmark className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -1003,6 +1169,111 @@ export default function MenuUpload() {
               </>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 询问菜品对话框 */}
+      <Dialog open={isAskDialogOpen} onOpenChange={setIsAskDialogOpen}>
+        <DialogContent className="max-w-md w-[90vw] max-h-[85vh] flex flex-col bg-background">
+          <DialogHeader className="pb-3 border-b border-border/60 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="text-lg font-bold text-foreground">{t("ask.title")}</DialogTitle>
+                <DialogDescription className="mt-1 text-sm text-muted-foreground">
+                  {t("ask.description")}
+                </DialogDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsAskDialogOpen(false)}
+                className="h-8 w-8 text-foreground hover:bg-muted"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+          
+          {/* 菜品信息卡片 */}
+          {currentDish && (
+            <div className="bg-muted/50 p-3 rounded-lg text-sm text-muted-foreground mt-4 flex-shrink-0">
+              <p className="font-medium text-foreground">{currentDish.originalName}</p>
+              {currentDish.description && (
+                <p className="mt-1">{currentDish.description}</p>
+              )}
+            </div>
+          )}
+
+          {/* 对话显示区域 */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+            {conversationHistory.length === 0 && !isAsking && (
+              <p className="text-center text-muted-foreground text-sm">{t("ask.empty")}</p>
+            )}
+            
+            {conversationHistory.map((msg, idx) => (
+              <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[80%] p-3 rounded-lg text-sm ${
+                  msg.role === "user" 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-muted text-foreground"
+                }`}>
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            
+            {isAsking && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] p-3 rounded-lg text-sm bg-muted text-foreground">
+                  {currentAnswer ? (
+                    currentAnswer
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>{t("ask.thinking")}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* 输入区域 */}
+          <div className="flex items-center gap-2 p-4 border-t border-border/60 flex-shrink-0">
+            <input
+              type="text"
+              value={currentQuestion}
+              onChange={(e) => setCurrentQuestion(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendQuestion();
+                }
+              }}
+              placeholder={t("ask.placeholder")}
+              className="flex-1 px-3 py-2 border border-border/60 rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              disabled={isAsking}
+            />
+            <Button
+              size="icon"
+              onClick={handleSendQuestion}
+              disabled={!currentQuestion.trim() || isAsking}
+              className="bg-foreground text-background hover:bg-foreground/90"
+            >
+              {isAsking ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+
+          {error && (
+            <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm border border-destructive/20 mx-4 mb-4">
+              {error}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
       

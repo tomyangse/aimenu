@@ -46,6 +46,12 @@ export type TranslationKey =
   | "item.select"
   | "item.selected"
   | "language.selector"
+  | "ask.title"
+  | "ask.description"
+  | "ask.empty"
+  | "ask.placeholder"
+  | "ask.error"
+  | "ask.thinking"
   | "auth.login"
   | "auth.logout"
   | "auth.register"
@@ -145,6 +151,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "auth.userAlreadyExists": "该邮箱已被注册",
     "auth.invalidEmail": "邮箱格式不正确",
     "auth.tryLogin": "请尝试直接登录",
+    "ask.title": "询问菜品",
+    "ask.description": "询问关于这道菜的问题",
+    "ask.empty": "有什么想了解的吗？比如：辣不辣？有没有香菜？",
+    "ask.placeholder": "输入您的问题...",
+    "ask.error": "抱歉，无法获取回答，请稍后重试。",
+    "ask.thinking": "思考中...",
     "error.invalidFile": "请上传图片文件",
     "error.fileTooLarge": "图片大小不能超过 10MB",
     "error.analysisFailed": "分析菜单时出错，请稍后重试",
@@ -224,6 +236,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "auth.userAlreadyExists": "This email is already registered",
     "auth.invalidEmail": "Invalid email format",
     "auth.tryLogin": "Please try logging in directly",
+    "ask.title": "Ask About Dish",
+    "ask.description": "Ask questions about this dish",
+    "ask.empty": "No questions yet? Feel free to ask!",
+    "ask.placeholder": "Type your question...",
+    "ask.error": "Sorry, unable to get answer, please try again later.",
+    "ask.thinking": "Thinking...",
   },
   "sv": {
     "app.title": "Ät som en lokal",
@@ -298,6 +316,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.analysisFailed": "Kunde inte analysera menyn, försök igen senare",
     "error.orderGenerationFailed": "Kunde inte generera beställningstext, försök igen senare",
     "error.retry": "Vänligen försök igen senare",
+    "ask.title": "Fråga om rätten",
+    "ask.description": "Ställ frågor om denna rätt",
+    "ask.empty": "Inga frågor ännu? Känn dig fri att fråga!",
+    "ask.placeholder": "Skriv din fråga...",
+    "ask.error": "Tyvärr, kunde inte få svar, försök igen senare.",
+    "ask.thinking": "Tänker...",
   },
   "es": {
     "app.title": "Come como un local",
@@ -372,6 +396,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.analysisFailed": "Error al analizar el menú, por favor intenta de nuevo más tarde",
     "error.orderGenerationFailed": "Error al generar el texto del pedido, por favor intenta de nuevo más tarde",
     "error.retry": "Por favor intenta de nuevo más tarde",
+    "ask.title": "Preguntar sobre el Plato",
+    "ask.description": "Haz preguntas sobre este plato",
+    "ask.empty": "¿Aún no hay preguntas? ¡Siéntete libre de preguntar!",
+    "ask.placeholder": "Escribe tu pregunta...",
+    "ask.error": "Lo siento, no se pudo obtener respuesta, por favor intenta de nuevo más tarde.",
+    "ask.thinking": "Pensando...",
   },
   "fr": {
     "app.title": "Mangez comme un local",
@@ -446,6 +476,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.analysisFailed": "Échec de l'analyse du menu, veuillez réessayer plus tard",
     "error.orderGenerationFailed": "Échec de la génération du texte de commande, veuillez réessayer plus tard",
     "error.retry": "Veuillez réessayer plus tard",
+    "ask.title": "Poser une Question sur le Plat",
+    "ask.description": "Posez des questions sur ce plat",
+    "ask.empty": "Pas encore de questions ? N'hésitez pas à demander !",
+    "ask.placeholder": "Tapez votre question...",
+    "ask.error": "Désolé, impossible d'obtenir une réponse, veuillez réessayer plus tard.",
+    "ask.thinking": "Réflexion...",
   },
   "de": {
     "app.title": "Essen wie ein Einheimischer",
@@ -520,6 +556,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.analysisFailed": "Menüanalyse fehlgeschlagen, bitte versuchen Sie es später erneut",
     "error.orderGenerationFailed": "Bestelltextgenerierung fehlgeschlagen, bitte versuchen Sie es später erneut",
     "error.retry": "Bitte versuchen Sie es später erneut",
+    "ask.title": "Fragen zum Gericht",
+    "ask.description": "Stellen Sie Fragen zu diesem Gericht",
+    "ask.empty": "Noch keine Fragen? Fühlen Sie sich frei zu fragen!",
+    "ask.placeholder": "Geben Sie Ihre Frage ein...",
+    "ask.error": "Entschuldigung, Antwort konnte nicht abgerufen werden, bitte versuchen Sie es später erneut.",
+    "ask.thinking": "Denken...",
   },
   "it": {
     "app.title": "Mangia come un locale",
@@ -594,6 +636,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.analysisFailed": "Analisi menu fallita, riprova più tardi",
     "error.orderGenerationFailed": "Generazione testo ordine fallita, riprova più tardi",
     "error.retry": "Riprova più tardi",
+    "ask.title": "Chiedi sul Piatto",
+    "ask.description": "Fai domande su questo piatto",
+    "ask.empty": "Ancora nessuna domanda? Sentiti libero di chiedere!",
+    "ask.placeholder": "Digita la tua domanda...",
+    "ask.error": "Scusa, impossibile ottenere risposta, riprova più tardi.",
+    "ask.thinking": "Pensando...",
   },
   "ja": {
     "app.title": "地元のように食べる",
@@ -668,6 +716,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.analysisFailed": "メニューの分析に失敗しました。後でもう一度お試しください",
     "error.orderGenerationFailed": "注文文の生成に失敗しました。後でもう一度お試しください",
     "error.retry": "後でもう一度お試しください",
+    "ask.title": "料理について質問",
+    "ask.description": "この料理について質問してください",
+    "ask.empty": "まだ質問はありませんか？お気軽に質問してください！",
+    "ask.placeholder": "質問を入力...",
+    "ask.error": "申し訳ございませんが、回答を取得できませんでした。後でもう一度お試しください。",
+    "ask.thinking": "考え中...",
   },
   "ko": {
     "app.title": "현지인처럼 먹기",
@@ -742,6 +796,12 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "error.analysisFailed": "메뉴 분석에 실패했습니다. 나중에 다시 시도해주세요",
     "error.orderGenerationFailed": "주문 텍스트 생성에 실패했습니다. 나중에 다시 시도해주세요",
     "error.retry": "나중에 다시 시도해주세요",
+    "ask.title": "메뉴에 대해 질문하기",
+    "ask.description": "이 메뉴에 대해 질문하세요",
+    "ask.empty": "아직 질문이 없으신가요? 자유롭게 질문해주세요!",
+    "ask.placeholder": "질문을 입력하세요...",
+    "ask.error": "죄송합니다. 답변을 가져올 수 없습니다. 나중에 다시 시도해주세요.",
+    "ask.thinking": "생각 중...",
   },
 };
 

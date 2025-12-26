@@ -10,6 +10,8 @@ export type TranslationKey =
   | "upload.clickOrDrag"
   | "upload.supportedFormatsDetail"
   | "upload.selectFile"
+  | "upload.takePhoto"
+  | "upload.chooseFromGallery"
   | "upload.collapse"
   | "upload.expand"
   | "upload.remove"
@@ -92,6 +94,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "点击或拖拽图片到这里上传",
     "upload.supportedFormatsDetail": "支持 JPG、PNG、WEBP 等格式",
     "upload.selectFile": "选择文件",
+    "upload.takePhoto": "拍照",
+    "upload.chooseFromGallery": "从相册选择",
     "upload.collapse": "收起",
     "upload.expand": "展开",
     "upload.remove": "删除",
@@ -172,6 +176,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "Click or drag image here to upload",
     "upload.supportedFormatsDetail": "Supports JPG, PNG, WEBP and other formats",
     "upload.selectFile": "Select File",
+    "upload.takePhoto": "Take Photo",
+    "upload.chooseFromGallery": "Choose from Gallery",
     "upload.collapse": "Collapse",
     "upload.expand": "Expand",
     "upload.remove": "Delete",
@@ -252,6 +258,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "Klicka eller dra bilden hit för att ladda upp",
     "upload.supportedFormatsDetail": "Stöder JPG, PNG, WEBP och andra format",
     "upload.selectFile": "Välj fil",
+    "upload.takePhoto": "Ta foto",
+    "upload.chooseFromGallery": "Välj från galleri",
     "upload.collapse": "Dölj",
     "upload.expand": "Visa",
     "upload.remove": "Ta bort",
@@ -332,6 +340,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "Haz clic o arrastra la imagen aquí para subir",
     "upload.supportedFormatsDetail": "Soporta formatos JPG, PNG, WEBP y otros",
     "upload.selectFile": "Seleccionar Archivo",
+    "upload.takePhoto": "Tomar Foto",
+    "upload.chooseFromGallery": "Elegir de Galería",
     "upload.collapse": "Contraer",
     "upload.expand": "Expandir",
     "upload.remove": "Eliminar",
@@ -412,6 +422,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "Cliquez ou glissez l'image ici pour télécharger",
     "upload.supportedFormatsDetail": "Supporte les formats JPG, PNG, WEBP et autres",
     "upload.selectFile": "Sélectionner un Fichier",
+    "upload.takePhoto": "Prendre une Photo",
+    "upload.chooseFromGallery": "Choisir dans la Galerie",
     "upload.collapse": "Réduire",
     "upload.expand": "Développer",
     "upload.remove": "Supprimer",
@@ -492,6 +504,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "Klicken oder Bild hierher ziehen zum Hochladen",
     "upload.supportedFormatsDetail": "Unterstützt JPG, PNG, WEBP und andere Formate",
     "upload.selectFile": "Datei Auswählen",
+    "upload.takePhoto": "Foto Aufnehmen",
+    "upload.chooseFromGallery": "Aus Galerie Wählen",
     "upload.collapse": "Einklappen",
     "upload.expand": "Aufklappen",
     "upload.remove": "Löschen",
@@ -572,6 +586,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "Clicca o trascina l'immagine qui per caricare",
     "upload.supportedFormatsDetail": "Supporta formati JPG, PNG, WEBP e altri",
     "upload.selectFile": "Seleziona File",
+    "upload.takePhoto": "Scatta Foto",
+    "upload.chooseFromGallery": "Scegli dalla Galleria",
     "upload.collapse": "Comprimi",
     "upload.expand": "Espandi",
     "upload.remove": "Elimina",
@@ -652,6 +668,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "クリックまたは画像をここにドラッグしてアップロード",
     "upload.supportedFormatsDetail": "JPG、PNG、WEBPなどの形式をサポート",
     "upload.selectFile": "ファイルを選択",
+    "upload.takePhoto": "写真を撮る",
+    "upload.chooseFromGallery": "ギャラリーから選択",
     "upload.collapse": "折りたたむ",
     "upload.expand": "展開",
     "upload.remove": "削除",
@@ -732,6 +750,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.clickOrDrag": "클릭하거나 이미지를 여기로 드래그하여 업로드",
     "upload.supportedFormatsDetail": "JPG, PNG, WEBP 등 형식 지원",
     "upload.selectFile": "파일 선택",
+    "upload.takePhoto": "사진 촬영",
+    "upload.chooseFromGallery": "갤러리에서 선택",
     "upload.collapse": "접기",
     "upload.expand": "펼치기",
     "upload.remove": "삭제",

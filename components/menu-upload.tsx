@@ -59,6 +59,7 @@ export default function MenuUpload() {
   const [isAsking, setIsAsking] = useState(false); // 是否正在询问
   const [currentAnswer, setCurrentAnswer] = useState<string>(""); // 当前流式回答
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleFileSelect = useCallback((selectedFile: File) => {
@@ -707,21 +708,44 @@ export default function MenuUpload() {
                 <div
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
-                  className="border-2 border-dashed border-border rounded-lg p-16 text-center hover:border-primary/30 transition-all cursor-pointer bg-muted/30"
-                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/30 transition-all bg-muted/30"
                 >
-                  <Upload className="mx-auto h-14 w-14 text-muted-foreground mb-6 opacity-60" />
+                  <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-60" />
                   <p className="text-base font-medium mb-2 text-foreground">
                     {t("upload.clickOrDrag")}
                   </p>
                   <p className="text-sm text-muted-foreground mb-6">
                     {t("upload.supportedFormatsDetail")}
                   </p>
-                  <Button type="button" variant="outline" className="border-border hover:bg-muted">
-                    {t("upload.selectFile")}
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="border-border hover:bg-muted flex items-center justify-center gap-2"
+                      onClick={() => cameraInputRef.current?.click()}
+                    >
+                      <Camera className="h-4 w-4" />
+                      {t("upload.takePhoto")}
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="border-border hover:bg-muted flex items-center justify-center gap-2"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Upload className="h-4 w-4" />
+                      {t("upload.chooseFromGallery")}
+                    </Button>
+                  </div>
                   <input
                     ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                  />
+                  <input
+                    ref={cameraInputRef}
                     type="file"
                     accept="image/*"
                     capture="environment"
@@ -1281,12 +1305,8 @@ export default function MenuUpload() {
       {/* 浮动扫描按钮 */}
       <button
         onClick={() => {
-          // 滚动到上传区域或触发文件选择
-          if (fileInputRef.current) {
-            fileInputRef.current.click();
-          } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
+          // 滚动到上传区域
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className="fixed bottom-24 right-4 z-30 bg-foreground text-background px-4 py-3 rounded-lg shadow-elevation flex items-center gap-2 hover:opacity-90 transition-opacity"
       >

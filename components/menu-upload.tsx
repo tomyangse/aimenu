@@ -1305,8 +1305,16 @@ export default function MenuUpload() {
       {/* 浮动扫描按钮 */}
       <button
         onClick={() => {
+          // 如果上传区域是折叠的，先展开
+          if (isUploadCollapsed && file) {
+            setIsUploadCollapsed(false);
+          }
           // 滚动到上传区域
           window.scrollTo({ top: 0, behavior: 'smooth' });
+          // 延迟一点后触发相机输入，确保滚动完成
+          setTimeout(() => {
+            cameraInputRef.current?.click();
+          }, 300);
         }}
         className="fixed bottom-24 right-4 z-30 bg-foreground text-background px-4 py-3 rounded-lg shadow-elevation flex items-center gap-2 hover:opacity-90 transition-opacity"
       >

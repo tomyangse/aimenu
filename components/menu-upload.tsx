@@ -898,7 +898,7 @@ export default function MenuUpload() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleRemoveFile}
+              onClick={() => handleRemoveFile()}
               className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <X className="h-4 w-4" />

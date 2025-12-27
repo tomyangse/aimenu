@@ -37,8 +37,8 @@ type SelectedItem = {
 export default function MenuUpload() {
   const { language: userLanguage } = useLanguage(); // 从全局状态获取用户语言
   const { t } = useTranslation(); // 翻译函数
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isUploadCollapsed, setIsUploadCollapsed] = useState(false);
   const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
@@ -62,44 +62,67 @@ export default function MenuUpload() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleFileSelect = useCallback((selectedFile: File) => {
-    // 验证文件类型
-    if (!selectedFile.type.startsWith("image/")) {
-      setError(t("error.invalidFile"));
-      return;
+  const handleFileSelect = useCallback(async (selectedFiles: File[]) => {
+    const validFiles: File[] = [];
+    let hasError = false;
+
+    // 先验证所有文件
+    for (const file of selectedFiles) {
+      // 验证文件类型
+      if (!file.type.startsWith("image/")) {
+        setError(t("error.invalidFile"));
+        hasError = true;
+        return;
+      }
+
+      // 验证文件大小（最大 10MB）
+      if (file.size > 10 * 1024 * 1024) {
+        setError(t("error.fileTooLarge"));
+        hasError = true;
+        return;
+      }
+
+      validFiles.push(file);
     }
 
-    // 验证文件大小（最大 10MB）
-    if (selectedFile.size > 10 * 1024 * 1024) {
-      setError(t("error.fileTooLarge"));
-      return;
+    if (validFiles.length > 0 && !hasError) {
+      // 创建所有预览
+      const previewPromises = validFiles.map((file) => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result as string);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      const newPreviews = await Promise.all(previewPromises);
+
+      setFiles((prev) => [...prev, ...validFiles]);
+      setPreviews((prev) => [...prev, ...newPreviews]);
+      setError(null);
+      setMenuItems([]);
     }
-
-    setFile(selectedFile);
-    setError(null);
-    setMenuItems([]);
-
-    // 创建预览
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(selectedFile);
-  }, []);
+  }, [t]);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      handleFileSelect(selectedFile);
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length > 0) {
+      handleFileSelect(selectedFiles);
+    }
+    // 重置input，允许重复选择同一文件
+    if (e.target) {
+      e.target.value = '';
     }
   };
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
-      const droppedFile = e.dataTransfer.files[0];
-      if (droppedFile) {
-        handleFileSelect(droppedFile);
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      if (droppedFiles.length > 0) {
+        handleFileSelect(droppedFiles);
       }
     },
     [handleFileSelect]
@@ -109,16 +132,26 @@ export default function MenuUpload() {
     e.preventDefault();
   };
 
-  const handleRemoveFile = () => {
-    setFile(null);
-    setPreview(null);
-    setMenuItems([]);
-    setMenuLanguage("");
-    setSelectedItems([]);
-    setIsUploadCollapsed(false);
-    setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  const handleRemoveFile = (index?: number) => {
+    if (index !== undefined) {
+      // 删除指定索引的文件
+      setFiles((prev) => prev.filter((_, i) => i !== index));
+      setPreviews((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      // 删除所有文件
+      setFiles([]);
+      setPreviews([]);
+      setMenuItems([]);
+      setMenuLanguage("");
+      setSelectedItems([]);
+      setIsUploadCollapsed(false);
+      setError(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      if (cameraInputRef.current) {
+        cameraInputRef.current.value = "";
+      }
     }
   };
 
@@ -465,7 +498,7 @@ export default function MenuUpload() {
   };
 
   const handleAnalyze = async () => {
-    if (!file) return;
+    if (!files || files.length === 0) return;
 
     setIsAnalyzing(true);
     setError(null);
@@ -475,7 +508,10 @@ export default function MenuUpload() {
 
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      // 添加所有文件
+      files.forEach((file) => {
+        formData.append("file", file);
+      });
       formData.append("targetLanguage", userLanguage); // 添加目标语言参数
 
       const response = await fetch("/api/analyze-menu", {
@@ -593,8 +629,12 @@ export default function MenuUpload() {
             try {
               const parsed = JSON.parse(data);
               
+              // 如果检测到错误，立即停止处理并显示错误
               if (parsed.error) {
-                throw new Error(parsed.error);
+                setError(parsed.error);
+                setIsAnalyzing(false);
+                setIsUploadCollapsed(false); // 展开上传区域，让用户看到错误
+                return;
               }
               
               if (parsed.chunk) {
@@ -670,7 +710,7 @@ export default function MenuUpload() {
       
       <div className="px-4 py-4 space-y-4">
       {/* 上传区域 - 移动端风格 */}
-      {(!file || !isUploadCollapsed) && (
+      {(files.length === 0 || !isUploadCollapsed) && (
         <Card className="shadow-soft border-border/60 rounded-xl">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
@@ -680,7 +720,7 @@ export default function MenuUpload() {
                   {t("upload.description")}
                 </CardDescription>
               </div>
-              {file && (
+              {files.length > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -704,7 +744,7 @@ export default function MenuUpload() {
           </CardHeader>
           {!isUploadCollapsed && (
             <CardContent className="space-y-4 pt-0">
-              {!file ? (
+              {files.length === 0 ? (
                 <div
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
@@ -741,6 +781,7 @@ export default function MenuUpload() {
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={handleFileInputChange}
                     className="hidden"
                   />
@@ -755,30 +796,35 @@ export default function MenuUpload() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="relative rounded-lg overflow-hidden border border-border shadow-soft">
-                    <div className="relative aspect-video bg-muted/50 flex items-center justify-center">
-                      {preview && (
-                        <img
-                          src={preview}
-                          alt="菜单预览"
-                          className="max-w-full max-h-full object-contain"
-                        />
-                      )}
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-3 right-3 bg-background/80 backdrop-blur-sm hover:bg-background border border-border/50"
-                      onClick={handleRemoveFile}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                  <div className="grid grid-cols-2 gap-3">
+                    {previews.map((preview, index) => (
+                      <div key={index} className="relative rounded-lg overflow-hidden border border-border shadow-soft">
+                        <div className="relative aspect-video bg-muted/50 flex items-center justify-center">
+                          <img
+                            src={preview}
+                            alt={`菜单预览 ${index + 1}`}
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background border border-border/50 h-7 w-7"
+                          onClick={() => handleRemoveFile(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                        <div className="absolute bottom-2 left-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium">
+                          {index + 1}/{previews.length}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   <div className="flex gap-3">
                     <Button
                       onClick={handleAnalyze}
-                      disabled={isAnalyzing}
+                      disabled={isAnalyzing || files.length === 0}
                       className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
                     >
                       {isAnalyzing ? (
@@ -793,11 +839,21 @@ export default function MenuUpload() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={handleRemoveFile}
+                      onClick={() => handleRemoveFile()}
                       disabled={isAnalyzing}
                       className="border-border hover:bg-muted"
                     >
                       {t("upload.reSelect")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isAnalyzing}
+                      className="border-border hover:bg-muted"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      {t("upload.addMore") || "添加更多"}
                     </Button>
                   </div>
                 </div>
@@ -814,14 +870,18 @@ export default function MenuUpload() {
       )}
       
       {/* 上传成功后收缩的窄条 */}
-      {isUploadCollapsed && file && (
+      {isUploadCollapsed && files.length > 0 && (
         <div className="flex items-center justify-between px-4 py-3 bg-card border border-border/60 rounded-xl shadow-soft">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
               <Camera className="h-5 w-5 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-sm font-medium text-foreground">{t("upload.uploaded")}</p>
+              <p className="text-sm font-medium text-foreground">
+                {files.length > 1 
+                  ? `${t("upload.uploaded")} (${files.length} ${t("upload.images") || "张"})`
+                  : t("upload.uploaded")}
+              </p>
               <p className="text-xs text-muted-foreground">{t("upload.expandToView")}</p>
             </div>
           </div>
@@ -1306,7 +1366,7 @@ export default function MenuUpload() {
       <button
         onClick={() => {
           // 如果上传区域是折叠的，先展开
-          if (isUploadCollapsed && file) {
+          if (isUploadCollapsed && files.length > 0) {
             setIsUploadCollapsed(false);
           }
           // 滚动到上传区域

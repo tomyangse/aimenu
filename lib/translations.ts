@@ -12,6 +12,8 @@ export type TranslationKey =
   | "upload.selectFile"
   | "upload.takePhoto"
   | "upload.chooseFromGallery"
+  | "upload.addMore"
+  | "upload.images"
   | "upload.collapse"
   | "upload.expand"
   | "upload.remove"
@@ -96,6 +98,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "选择文件",
     "upload.takePhoto": "拍照",
     "upload.chooseFromGallery": "从相册选择",
+    "upload.addMore": "添加更多",
+    "upload.images": "张",
     "upload.collapse": "收起",
     "upload.expand": "展开",
     "upload.remove": "删除",
@@ -178,6 +182,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "Select File",
     "upload.takePhoto": "Take Photo",
     "upload.chooseFromGallery": "Choose from Gallery",
+    "upload.addMore": "Add More",
+    "upload.images": "images",
     "upload.collapse": "Collapse",
     "upload.expand": "Expand",
     "upload.remove": "Delete",
@@ -260,6 +266,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "Välj fil",
     "upload.takePhoto": "Ta foto",
     "upload.chooseFromGallery": "Välj från galleri",
+    "upload.addMore": "Lägg till fler",
+    "upload.images": "bilder",
     "upload.collapse": "Dölj",
     "upload.expand": "Visa",
     "upload.remove": "Ta bort",
@@ -342,6 +350,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "Seleccionar Archivo",
     "upload.takePhoto": "Tomar Foto",
     "upload.chooseFromGallery": "Elegir de Galería",
+    "upload.addMore": "Agregar Más",
+    "upload.images": "imágenes",
     "upload.collapse": "Contraer",
     "upload.expand": "Expandir",
     "upload.remove": "Eliminar",
@@ -424,6 +434,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "Sélectionner un Fichier",
     "upload.takePhoto": "Prendre une Photo",
     "upload.chooseFromGallery": "Choisir dans la Galerie",
+    "upload.addMore": "Ajouter Plus",
+    "upload.images": "images",
     "upload.collapse": "Réduire",
     "upload.expand": "Développer",
     "upload.remove": "Supprimer",
@@ -506,6 +518,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "Datei Auswählen",
     "upload.takePhoto": "Foto Aufnehmen",
     "upload.chooseFromGallery": "Aus Galerie Wählen",
+    "upload.addMore": "Mehr Hinzufügen",
+    "upload.images": "Bilder",
     "upload.collapse": "Einklappen",
     "upload.expand": "Aufklappen",
     "upload.remove": "Löschen",
@@ -588,6 +602,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "Seleziona File",
     "upload.takePhoto": "Scatta Foto",
     "upload.chooseFromGallery": "Scegli dalla Galleria",
+    "upload.addMore": "Aggiungi Altri",
+    "upload.images": "immagini",
     "upload.collapse": "Comprimi",
     "upload.expand": "Espandi",
     "upload.remove": "Elimina",
@@ -670,6 +686,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "ファイルを選択",
     "upload.takePhoto": "写真を撮る",
     "upload.chooseFromGallery": "ギャラリーから選択",
+    "upload.addMore": "さらに追加",
+    "upload.images": "枚",
     "upload.collapse": "折りたたむ",
     "upload.expand": "展開",
     "upload.remove": "削除",
@@ -752,6 +770,8 @@ const translations: Record<LanguageCode, Record<TranslationKey, string>> = {
     "upload.selectFile": "파일 선택",
     "upload.takePhoto": "사진 촬영",
     "upload.chooseFromGallery": "갤러리에서 선택",
+    "upload.addMore": "더 추가",
+    "upload.images": "장",
     "upload.collapse": "접기",
     "upload.expand": "펼치기",
     "upload.remove": "삭제",
